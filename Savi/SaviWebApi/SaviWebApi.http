@@ -1,0 +1,6 @@
+@SaviWebApi_HostAddress = http://localhost:5078
+
+GET {{SaviWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
