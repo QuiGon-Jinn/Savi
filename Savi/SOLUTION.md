@@ -1,0 +1,3 @@
+I've used JWT bearer token to secure my API endpoints. The JWT token is generated upon user authentication and is required for accessing protected routes. 
+This can easily be replaced with other authentication methods such as OAuth2, API keys, or session-based authentication depending on the specific requirements of your application. 
+I've used Minimal APIs, but in larger applications, I would consider using controllers for better organization and maintainability.
