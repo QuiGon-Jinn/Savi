@@ -21,6 +21,9 @@ namespace SaviWebApi.Models
         public string Password { get; set; } = string.Empty;
 
         public UserRole Role { get; set; } = UserRole.Clinician;
+
+        // Optional practice association for the new user
+        public Practice? Practice { get; set; } = Data.Models.Practice.None;
     }
 
     public class AuthResponse

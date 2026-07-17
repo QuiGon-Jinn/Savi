@@ -11,6 +11,6 @@ namespace SaviWebApi.Models
         public DateOnly EndDate { get; set; }
 
         [Required]
-        public string Practice { get; set; } = string.Empty;
+        public Data.Models.Practice Practice { get; set; }
     }
 }

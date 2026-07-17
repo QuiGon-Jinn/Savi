@@ -6,7 +6,7 @@ namespace SaviWebApi.Models
 {
     public class ShiftInput
     {   
-        public string Practice { get; set; } = string.Empty;
+        public Practice Practice { get; set; } = Practice.Smile;
 
         public DateOnly Date { get; set; } = DateOnly.FromDateTime(DateTime.Today);
 

@@ -121,15 +121,30 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // Minimal endpoint to insert a Shift
-app.MapPost("/shifts", async (ShiftInput input, SqlDbContext db) =>
+app.MapPost("/shifts", async (ShiftInput input, SqlDbContext db, ClaimsPrincipal user) =>
 {
     if (input == null)
         return Results.BadRequest();
 
+    // determine authenticated user
+    var sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(sub) || !Guid.TryParse(sub, out var creatorId))
+        return Results.Unauthorized();
+
+    var creator = await db.Users.FindAsync(creatorId);
+    if (creator == null)
+        return Results.Unauthorized();
+
+    // If the creator is a PracticeManager they can only create shifts for their own practice
+    if (creator.Role == UserRole.PracticeManager && creator.Practice.HasValue && creator.Practice.Value != input.Practice)
+    {
+        return Results.Forbid();
+    }
+
     var shift = new Shift
     {
         Id = Guid.NewGuid(),
-        Practice = input.Practice ?? string.Empty,
+        Practice = input.Practice,
         Date = input.Date,
         StartTime = input.StartTime,
         EndTime = input.EndTime,
@@ -197,10 +212,25 @@ app.MapPost("/timesheets", async (TimesheetInput input, SqlDbContext db, ClaimsP
 }).RequireAuthorization("Clinician");
 
 // Payment run - aggregates timesheets for a practice and date range
-app.MapPost("/paymentrun", async (PaymentRunInput input, SqlDbContext db) =>
+app.MapPost("/paymentrun", async (PaymentRunInput input, SqlDbContext db, ClaimsPrincipal user) =>
 {
     if (input == null)
         return Results.BadRequest();
+
+    // determine authenticated user
+    var sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(sub) || !Guid.TryParse(sub, out var creatorId))
+        return Results.Unauthorized();
+
+    var creator = await db.Users.FindAsync(creatorId);
+    if (creator == null)
+        return Results.Unauthorized();
+
+    // If the creator is a PracticeManager they can only create shifts for their own practice
+    if (creator.Role == UserRole.PracticeManager && creator.Practice.HasValue && creator.Practice.Value != input.Practice)
+    {
+        return Results.Forbid();
+    }
 
     // Load timesheets with their shifts and users that match the practice and date range
     var timesheets = await db.Timesheets
@@ -265,7 +295,8 @@ app.MapPost("/auth/register", async (RegisterRequest reg, SqlDbContext db) =>
     {
         Id = Guid.NewGuid(),
         Username = reg.Username,
-        Role = reg.Role
+        Role = reg.Role,
+        Practice = reg.Practice
     };
     user.SetPassword(reg.Password);
 

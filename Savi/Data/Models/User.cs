@@ -23,6 +23,9 @@ namespace Data.Models
         [Required]
         public UserRole Role { get; set; }
 
+        // Optional practice association for PracticeManager or Clinician users
+        public Practice? Practice { get; set; }
+
         // Set a user's password by generating a random salt and hashing with PBKDF2.
         public void SetPassword(string password)
         {

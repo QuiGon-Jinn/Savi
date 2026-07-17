@@ -8,7 +8,7 @@ namespace Data.Models
         public Guid Id { get; set; }
 
         [Required]
-        public string Practice { get; set; } = string.Empty;
+        public Practice Practice { get; set; }
 
         [Required] 
         public DateOnly Date { get; set; }
