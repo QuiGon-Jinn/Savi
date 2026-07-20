@@ -5,6 +5,5 @@
     <File Path="SOLUTION.md" />
   </Folder>
   <Project Path="Data/Data.csproj" />
-  <Project Path="SaviApi/SaviApi.csproj" />
   <Project Path="SaviWebApi/SaviWebApi.csproj" />
 </Solution>
